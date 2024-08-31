@@ -1,10 +1,10 @@
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
 
 class DBClient {
   constructor() {
-    const host = process.env.DB_HOST || "localhost";
-    const port = process.env.DB_PORT || "27017";
-    const database = process.env.DB_DATABASE || "files_manager";
+    const host = process.env.DB_HOST || 'localhost';
+    const port = process.env.DB_PORT || '27017';
+    const database = process.env.DB_DATABASE || 'files_manager';
 
     this.url = `mongodb://${host}:${port}`;
     this.client = new MongoClient(this.url);
@@ -19,7 +19,7 @@ class DBClient {
       await this.client.connect();
       this.isConnected = true;
     } catch (error) {
-      console.error("Connection failed:", error);
+      console.error('Connection failed:', error);
       this.isConnected = false;
     }
   }
@@ -30,19 +30,19 @@ class DBClient {
 
   async nbUsers() {
     if (!this.isAlive()) {
-      throw new Error("Database not connected");
+      throw new Error('Database not connected');
     }
     const db = this.client.db(this.database);
-    const count = await db.collection("users").countDocuments();
+    const count = await db.collection('users').countDocuments();
     return count;
   }
 
   async nbFiles() {
     if (!this.isAlive()) {
-      throw new Error("Database not connected");
+      throw new Error('Database not connected');
     }
     const db = this.client.db(this.database);
-    const count = await db.collection("files").countDocuments();
+    const count = await db.collection('files').countDocuments();
     return count;
   }
 }
