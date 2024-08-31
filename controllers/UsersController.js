@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import dbClient from '../utils/db';
+import dbClient from "../utils/db.js"; // eslint-disable-line
 
 class UsersController {
   static async postNew(req, res) {
@@ -12,11 +12,12 @@ class UsersController {
       return res.status(400).json({ error: 'Missing password' });
     }
 
-    const user = await (await dbClient.client).db
+    const userExists = await dbClient.client
+      .db('files_manager')
       .collection('users')
       .findOne({ email });
 
-    if (user) {
+    if (userExists) {
       return res.status(400).json({ error: 'Already exist' });
     }
 
@@ -24,11 +25,14 @@ class UsersController {
       .createHash('sha1')
       .update(password)
       .digest('hex');
-    const newUser = await (await dbClient.client).db
-      .collection('users')
-      .insertOne({ email, password: hashedPassword });
+    const newUser = { email, password: hashedPassword };
 
-    return res.status(201).json({ id: newUser.insertedId, email });
+    await dbClient.client
+      .db('files_manager')
+      .collection('users')
+      .insertOne(newUser);
+
+    return res.status(201).json({ id: newUser._id, email: newUser.email });
   }
 }
 
