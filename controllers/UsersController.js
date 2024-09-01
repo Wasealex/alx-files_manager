@@ -1,5 +1,7 @@
-const dbClient = require("../utils/db");
-const crypto = require("crypto");
+// controllers/UsersController.js
+
+const crypto = require('crypto');
+const dbClient = require('../utils/db');
 
 class UsersController {
   static async postNew(req, res) {
@@ -7,26 +9,26 @@ class UsersController {
 
     // Validate input
     if (!email) {
-      return res.status(400).json({ error: "Missing email" });
+      return res.status(400).json({ error: 'Missing email' });
     }
     if (!password) {
-      return res.status(400).json({ error: "Missing password" });
+      return res.status(400).json({ error: 'Missing password' });
     }
 
     try {
       // Check if the email already exists
       const existingUser = await dbClient.db
-        .collection("users")
+        .collection('users')
         .findOne({ email });
       if (existingUser) {
-        return res.status(400).json({ error: "Already exists" });
+        return res.status(400).json({ error: 'Already exists' });
       }
 
       // Hash the password using SHA1
       const hashedPassword = crypto
-        .createHash("sha1")
+        .createHash('sha1')
         .update(password)
-        .digest("hex");
+        .digest('hex');
 
       // Create new user object
       const newUser = {
@@ -35,16 +37,16 @@ class UsersController {
       };
 
       // Insert the new user into the database
-      const result = await dbClient.db.collection("users").insertOne(newUser);
+      const result = await dbClient.db.collection('users').insertOne(newUser);
 
       // Return the new user with id and email
-      res.status(201).json({
+      return res.status(201).json({
         id: result.insertedId,
         email: newUser.email,
       });
     } catch (error) {
-      console.error("Error creating user:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error('Error creating user:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 }
